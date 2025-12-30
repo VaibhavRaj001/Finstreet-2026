@@ -66,3 +66,12 @@ def login():
     }), 200
 
 
+from middlewares.auth_middleware import token_required
+
+@auth_bp.route("/profile", methods=["GET"])
+@token_required
+def profile():
+    return jsonify({
+        "message": "Protected route accessed",
+        "user": request.user
+    }), 200
