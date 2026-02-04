@@ -6,8 +6,55 @@ const crypto = require("crypto");
 const { generateToken } = require("../utils/token.util");
 const { sendEmail } = require("../utils/email.util");
 
+const ACCESS_TTL = "15m";
+const REFRESH_TTL = "7d";
+const isProd = process.env.NODE_ENV === "production";
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:4000";
+
+const cookieOptions = (maxAgeMs) => ({
+  httpOnly: true,
+  sameSite: "lax",
+  secure: isProd,
+  maxAge: maxAgeMs
+});
+
+const sanitizeUser = (user) => {
+  const {
+    password,
+    resetToken,
+    resetTokenExpiry,
+    refreshToken,
+    emailVerificationToken,
+    __v,
+    ...rest
+  } = user.toObject();
+  return rest;
+};
+
+const issueTokens = async (res, user) => {
+  const accessToken = jwt.sign(
+    { id: user._id, email: user.email, name: user.name, provider: user.provider },
+    process.env.JWT_SECRET,
+    { expiresIn: ACCESS_TTL }
+  );
+
+  const refreshToken = jwt.sign(
+    { id: user._id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: REFRESH_TTL }
+  );
+
+  user.refreshToken = refreshToken;
+  await user.save();
+
+  res.cookie("accessToken", accessToken, cookieOptions(15 * 60 * 1000));
+  res.cookie("refreshToken", refreshToken, cookieOptions(7 * 24 * 60 * 60 * 1000));
+
+  return { accessToken, refreshToken };
+};
+
 /* =========================
-   REGISTER
+   REGISTER (LOCAL)
 ========================= */
 exports.register = async (req, res) => {
   try {
@@ -16,27 +63,29 @@ exports.register = async (req, res) => {
     if (!name || !email || !password)
       return res.status(400).json({ error: "All fields required" });
 
+    if (password.length < 8)
+      return res.status(400).json({ error: "Password must be at least 8 characters" });
+
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(409).json({ error: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const { raw, hashed } = generateToken();
-
-    await User.create({
+    const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      emailVerificationToken: hashed,
-      isVerified: false
+      provider: "local",
+      isVerified: true
     });
 
-    const verifyLink = `http://localhost:5000/api/auth/verify-email/${raw}`;
-    sendEmail(email, "Verify Email", verifyLink);
+    const tokens = await issueTokens(res, user);
 
     return res.status(201).json({
-      message: "Registered successfully. Please verify your email."
+      message: "Registered successfully",
+      user: sanitizeUser(user),
+      ...tokens
     });
   } catch (err) {
     console.error(err);
@@ -45,35 +94,7 @@ exports.register = async (req, res) => {
 };
 
 /* =========================
-   VERIFY EMAIL
-========================= */
-exports.verifyEmail = async (req, res) => {
-  try {
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(req.params.token)
-      .digest("hex");
-
-    const user = await User.findOne({
-      emailVerificationToken: hashedToken
-    });
-
-    if (!user)
-      return res.status(400).json({ error: "Invalid or expired token" });
-
-    user.isVerified = true;
-    user.emailVerificationToken = null;
-    await user.save();
-
-    res.json({ message: "Email verified successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
-/* =========================
-   LOGIN (ACCESS + REFRESH)
+   LOGIN (LOCAL)
 ========================= */
 exports.login = async (req, res) => {
   try {
@@ -83,35 +104,19 @@ exports.login = async (req, res) => {
       return res.status(400).json({ error: "Email and password required" });
 
     const user = await User.findOne({ email });
-    if (!user)
+    if (!user || !user.password)
       return res.status(401).json({ error: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
       return res.status(401).json({ error: "Invalid credentials" });
 
-    if (!user.isVerified)
-      return res.status(403).json({ error: "Please verify your email" });
-
-    const accessToken = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "15m" }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    user.refreshToken = refreshToken;
-    await user.save();
+    const tokens = await issueTokens(res, user);
 
     res.json({
       message: "Login successful",
-      accessToken,
-      refreshToken
+      user: sanitizeUser(user),
+      ...tokens
     });
   } catch (err) {
     console.error(err);
@@ -120,28 +125,35 @@ exports.login = async (req, res) => {
 };
 
 /* =========================
+   ME
+========================= */
+exports.me = async (req, res) => {
+  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+
+  const user = await User.findById(req.user.id);
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  res.json({ user: sanitizeUser(user) });
+};
+
+/* =========================
    REFRESH ACCESS TOKEN
 ========================= */
 exports.refreshToken = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    const incoming = req.cookies?.refreshToken || req.body.refreshToken;
 
-    if (!refreshToken)
+    if (!incoming)
       return res.status(401).json({ error: "Refresh token required" });
 
-    const user = await User.findOne({ refreshToken });
+    const payload = jwt.verify(incoming, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findOne({ _id: payload.id, refreshToken: incoming });
+
     if (!user)
       return res.status(403).json({ error: "Invalid refresh token" });
 
-    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
-    const newAccessToken = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "15m" }
-    );
-
-    res.json({ accessToken: newAccessToken });
+    const tokens = await issueTokens(res, user);
+    res.json({ ...tokens });
   } catch (err) {
     console.error(err);
     res.status(403).json({ error: "Expired refresh token" });
@@ -153,20 +165,68 @@ exports.refreshToken = async (req, res) => {
 ========================= */
 exports.logout = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    const incoming = req.cookies?.refreshToken || req.body.refreshToken;
 
-    if (refreshToken) {
-      const user = await User.findOne({ refreshToken });
+    if (incoming) {
+      const user = await User.findOne({ refreshToken: incoming });
       if (user) {
         user.refreshToken = null;
         await user.save();
       }
     }
 
+    res.clearCookie("accessToken", cookieOptions(0));
+    res.clearCookie("refreshToken", cookieOptions(0));
+
     res.json({ message: "Logged out successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+/* =========================
+   GOOGLE / GITHUB OAUTH CALLBACK
+========================= */
+exports.oauthCallback = async (req, res) => {
+  try {
+    const { provider, profile } = req.user || {};
+    if (!provider || !profile)
+      return res.redirect(`${CLIENT_URL}/login?error=oauth_failed`);
+
+    const email = profile.emails?.[0]?.value;
+    const image = profile.photos?.[0]?.value;
+    const name = profile.displayName || profile.username || "User";
+
+    if (!email)
+      return res.redirect(`${CLIENT_URL}/login?error=email_required`);
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        password: null,
+        provider,
+        providerId: profile.id,
+        image,
+        isVerified: true
+      });
+    } else {
+      user.provider = provider;
+      user.providerId = user.providerId || profile.id;
+      user.image = user.image || image;
+      user.isVerified = true;
+      await user.save();
+    }
+
+    await issueTokens(res, user);
+
+    return res.redirect(`${CLIENT_URL}/`);
+  } catch (err) {
+    console.error(err);
+    return res.redirect(`${CLIENT_URL}/login?error=oauth_failed`);
   }
 };
 
@@ -188,7 +248,7 @@ exports.forgotPassword = async (req, res) => {
     user.resetTokenExpiry = Date.now() + 15 * 60 * 1000;
     await user.save();
 
-    const resetLink = `http://localhost:5000/api/auth/reset-password/${raw}`;
+    const resetLink = `${process.env.SERVER_URL}/api/auth/reset-password/${raw}`;
     sendEmail(email, "Reset Password", resetLink);
 
     res.json({ message: "Password reset link sent" });
