@@ -8,11 +8,13 @@ const connectDB = require("./config/db");
 const attachPassportStrategies = require("./config/passport");
 
 const authRoutes = require("./routes/auth.routes");
+const eventRoutes = require("./routes/event.routes");
+const teamRoutes = require("./routes/team.routes");
 
 const app = express();
 connectDB();
 
-const clientOrigin = process.env.CLIENT_URL || "http://localhost:4000";
+const clientOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 app.use(
   cors({
     origin: clientOrigin,
@@ -31,7 +33,16 @@ const authLimiter = rateLimit({
   legacyHeaders: false
 });
 
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
 app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/events", apiLimiter, eventRoutes);
+app.use("/api/teams", apiLimiter, teamRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

@@ -33,7 +33,7 @@ const sanitizeUser = (user) => {
 
 const issueTokens = async (res, user) => {
   const accessToken = jwt.sign(
-    { id: user._id, email: user.email, name: user.name, provider: user.provider },
+    { id: user._id, email: user.email, name: user.name, role: user.role, provider: user.provider },
     process.env.JWT_SECRET,
     { expiresIn: ACCESS_TTL }
   );
