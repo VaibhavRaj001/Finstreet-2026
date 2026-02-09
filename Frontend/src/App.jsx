@@ -9,6 +9,8 @@ import Register from "./Pages/Register";
 import CreateTeam from "./Pages/CreateTeam";
 import JoinTeam from "./Pages/JoinTeam";
 import MyTeams from "./Pages/MyTeams";
+import Events from "./Pages/Events";
+import EventPage from "./Pages/EventPage";
 import AdminDashboard from "./Pages/AdminDashboard";
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/events/:id" element={<EventPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/create-team" element={<CreateTeam />} />
