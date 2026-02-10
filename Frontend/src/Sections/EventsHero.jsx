@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { MapPin } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const EventsHero = ({ event }) => {
-  // Use event date for timer or default to a future date if not valid (logic to be refined as needed)
-  // For now, hardcoding Enigma date as base, but could interpret event.fullDate if formatted correctly.
-  // Converting event.fullDate "March 6, 2026" to valid date string for constructor
   const targetDate =
     event && event.fullDate ? new Date(event.fullDate) : new Date("2026-03-06");
 
@@ -14,6 +12,7 @@ const EventsHero = ({ event }) => {
       days: 0,
       hours: 0,
       mins: 0,
+      seconds: 0,
     };
 
     if (difference > 0) {
@@ -21,6 +20,7 @@ const EventsHero = ({ event }) => {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
         mins: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
       };
     }
     return timeLeft;
@@ -31,25 +31,25 @@ const EventsHero = ({ event }) => {
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
-    }, 60000);
+    }, 1000);
 
     return () => clearInterval(timer);
-  }, [event]); // Re-run if event changes
+  }, [event]); 
 
-  if (!event) return null; // Safety check
+  if (!event) return null; 
 
   const isFlagship = event.type === "FLAGSHIP";
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-[#0F0F12]">
-      {/* Background Image - Keeping same for all as requested */}
+      
       <img
         src="/Enigma_bck.png"
         alt="Event Background"
         className="absolute inset-0 h-full w-full object-cover opacity-80"
       />
 
-      {/* Gradient Overlay for better text visibility */}
+      
       <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/80" />
 
       {/* Main Content Container */}
@@ -96,7 +96,7 @@ const EventsHero = ({ event }) => {
                 Days
               </span>
             </div>
-            <div className="h-8 w-[1px] bg-gray-600/50"></div>
+            <div className="h-8 w-px bg-gray-600/50"></div>
             <div className="flex flex-col items-center gap-1">
               <span className="font-antonio text-3xl text-[#D4AF37] md:text-5xl">
                 {String(timeLeft.hours).padStart(2, "0")}
@@ -112,6 +112,26 @@ const EventsHero = ({ event }) => {
               </span>
               <span className="text-[10px] text-gray-400 uppercase tracking-widest">
                 Mins
+              </span>
+            </div>
+            <div className="pb-4 text-2xl text-gray-500">:</div>
+            <div className="flex flex-col items-center gap-1">
+              <div className="relative h-9 w-12 overflow-hidden md:h-12 md:w-16">
+                <AnimatePresence mode="popLayout">
+                  <motion.span
+                    key={timeLeft.seconds}
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "-100%" }}
+                    transition={{ duration: 0.5, ease: "circOut" }}
+                    className="absolute inset-0 flex items-center justify-center font-antonio text-3xl text-[#D4AF37] md:text-5xl"
+                  >
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
+              <span className="text-[10px] text-gray-400 uppercase tracking-widest">
+                Secs
               </span>
             </div>
           </div>
