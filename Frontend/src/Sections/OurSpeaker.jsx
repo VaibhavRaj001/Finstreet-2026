@@ -13,11 +13,11 @@ function OurSpeaker() {
     <section className="relative w-full overflow-hidden py-24 text-white">
       {/* Background Layer */}
       <div className="absolute inset-0 z-10 ">
-        <div className="" />
+        <div className="w-screen" />
         <img
           src="/OurSpeaker_Bck.png"
           alt="Speakers Background"
-          className=" h-full w-full object-cover opacity-75"
+          className=" h-full w-full object-fill opacity-75"
         />
       </div>
 
