@@ -7,6 +7,7 @@ import UpcomingEvents from "../Sections/UpcomingEvents";
 import Footer from "../Sections/Footer";
 import SectionSeperator from "../Components/SectionSeperator";
 import { eventsData } from "../Data/events";
+import OurSpeaker from "../Sections/OurSpeaker";
 
 const EventPage = () => {
   const { id } = useParams();
@@ -37,13 +38,15 @@ const EventPage = () => {
   }
 
   return (
-    <div className="h-fit overflow-y-clip w-full bg-[#0F0F12] text-white">
+    <div className="h-fit overflow-y-clip w-fit bg-[#0F0F12] text-white">
       <Navbar />
       <EventsHero event={event} />
       <SectionSeperator />
       <EventDetails event={event} />
       <SectionSeperator />
       <UpcomingEvents />
+      <SectionSeperator />
+      <OurSpeaker />
       <SectionSeperator />
       <Footer />
     </div>

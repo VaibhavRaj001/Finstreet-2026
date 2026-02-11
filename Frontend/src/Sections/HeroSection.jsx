@@ -11,7 +11,7 @@ const HeroSection = () => {
         <img
           src="./heroSection.svg"
           alt="Background Decoration"
-          className="w-full h-full object-cover opacity-90"
+          className="w-full h-full opacity-90"
         />
 
         <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>

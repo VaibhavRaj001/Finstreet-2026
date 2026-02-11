@@ -10,7 +10,7 @@ function Home() {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
+    <div className="min-h-screen max-w-fit flex flex-col relative overflow-hidden">
       <Navbar />
 
       <HeroSection />

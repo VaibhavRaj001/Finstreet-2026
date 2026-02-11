@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom"; // Import Link
+import { Link } from "react-router-dom"; 
 import EventCard from "../Components/EventCard";
-import { eventsData } from "../Data/events"; // Import centralized data
+import { eventsData } from "../Data/events"; 
 
 const UpcomingEvents = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
