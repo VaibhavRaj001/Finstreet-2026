@@ -14,6 +14,9 @@ const teamRoutes = require("./routes/team.routes");
 const app = express();
 connectDB();
 
+// Trust proxy is needed when running behind reverse proxies so secure cookies are honored
+app.set("trust proxy", 1);
+
 const clientOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 app.use(
   cors({
