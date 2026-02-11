@@ -18,7 +18,7 @@ const AboutUs = () => {
               <div className="absolute left-8 top-10 bottom-10 w-[2px] bg-[#D4AF37]"></div>
 
               <p className="text-white/70 text-base md:text-lg leading-relaxed pl-6 font-light">
-                The{" "}
+                The
                 <span className="text-[#D4AF37] font-medium">
                   Finance Club of Birla Institute of Technology
                 </span>
