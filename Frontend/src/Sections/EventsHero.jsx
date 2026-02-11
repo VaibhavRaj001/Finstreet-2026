@@ -85,7 +85,7 @@ const EventsHero = ({ event }) => {
         {/* Bottom Section: Timer & Details */}
         <div className="flex w-full flex-col items-start gap-8 md:flex-row md:items-end md:justify-between">
           {/* Countdown Timer */}
-          <div className="flex items-center gap-6 rounded-2xl border border-white/10 bg-black/20 px-8 py-4 backdrop-blur-md shadow-[3px_8px_15px_1px_rgba(212,175,55,0.5)]">
+          <div className="flex items-center gap-6 rounded-2xl border border-white/10 bg-black/20 md:px-8 md:py-4 px-4 py-4 backdrop-blur-md shadow-[3px_8px_15px_1px_rgba(212,175,55,0.5)]">
             <div className="flex flex-col items-center gap-1">
               <span className="font-antonio text-3xl text-[#D4AF37] md:text-5xl">
                 {String(timeLeft.days).padStart(2, "0")}

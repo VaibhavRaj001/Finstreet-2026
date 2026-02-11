@@ -9,13 +9,11 @@ import { eventsData } from "../Data/events";
 import OurSpeaker from "../Sections/OurSpeaker";
 
 function Events() {
-  
   const defaultEvent = eventsData.find((e) => e.id === "enigma");
 
   return (
-    <div className="h-fit overflow-y-clip w-fit bg-[#0F0F12] text-white">
+    <div className="h-fit overflow-y-clip bg-[#0F0F12] text-white">
       <Navbar />
-
       <EventsHero event={defaultEvent} />
       <SectionSeperator />
       <EventDetails event={defaultEvent} />
