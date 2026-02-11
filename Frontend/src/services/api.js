@@ -1,7 +1,7 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
-// Generic fetch wrapper with credentials
-async function fetchAPI(endpoint, options = {}) {
+// Fetch wrapper that retries once after attempting refresh-token on 401
+async function fetchAPI(endpoint, options = {}, retry = true) {
     const res = await fetch(`${API_URL}${endpoint}`, {
         ...options,
         credentials: "include",
@@ -11,6 +11,20 @@ async function fetchAPI(endpoint, options = {}) {
         },
     });
 
+    // Attempt refresh once on 401 responses
+    if (res.status === 401 && retry) {
+        const refreshRes = await fetch(`${API_URL}/auth/refresh-token`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+        });
+
+        if (refreshRes.ok) {
+            return fetchAPI(endpoint, options, false);
+        }
+    }
+
+    // Safely parse JSON (backend always returns JSON)
     const data = await res.json();
 
     if (!res.ok) {
@@ -19,6 +33,25 @@ async function fetchAPI(endpoint, options = {}) {
 
     return data;
 }
+
+// Auth API
+export const authAPI = {
+    login: (email, password) =>
+        fetchAPI("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password }),
+        }),
+    register: (name, email, password) =>
+        fetchAPI("/auth/register", {
+            method: "POST",
+            body: JSON.stringify({ name, email, password }),
+        }),
+    logout: () =>
+        fetchAPI("/auth/logout", {
+            method: "POST",
+        }),
+    me: () => fetchAPI("/auth/me", { method: "GET" }),
+};
 
 // Event API
 export const eventAPI = {

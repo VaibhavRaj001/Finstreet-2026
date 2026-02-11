@@ -9,7 +9,7 @@ const { sendEmail } = require("../utils/email.util");
 const ACCESS_TTL = "15m";
 const REFRESH_TTL = "7d";
 const isProd = process.env.NODE_ENV === "production";
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:4000";
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 const cookieOptions = (maxAgeMs) => ({
   httpOnly: true,
@@ -17,6 +17,9 @@ const cookieOptions = (maxAgeMs) => ({
   secure: isProd,
   maxAge: maxAgeMs
 });
+
+const hashToken = (token) =>
+  crypto.createHash("sha256").update(token).digest("hex");
 
 const sanitizeUser = (user) => {
   const {
@@ -44,7 +47,7 @@ const issueTokens = async (res, user) => {
     { expiresIn: REFRESH_TTL }
   );
 
-  user.refreshToken = refreshToken;
+  user.refreshToken = hashToken(refreshToken);
   await user.save();
 
   res.cookie("accessToken", accessToken, cookieOptions(15 * 60 * 1000));
@@ -147,7 +150,8 @@ exports.refreshToken = async (req, res) => {
       return res.status(401).json({ error: "Refresh token required" });
 
     const payload = jwt.verify(incoming, process.env.JWT_REFRESH_SECRET);
-    const user = await User.findOne({ _id: payload.id, refreshToken: incoming });
+    const hashedToken = hashToken(incoming);
+    const user = await User.findOne({ _id: payload.id, refreshToken: hashedToken });
 
     if (!user)
       return res.status(403).json({ error: "Invalid refresh token" });
@@ -168,7 +172,8 @@ exports.logout = async (req, res) => {
     const incoming = req.cookies?.refreshToken || req.body.refreshToken;
 
     if (incoming) {
-      const user = await User.findOne({ refreshToken: incoming });
+      const hashedToken = hashToken(incoming);
+      const user = await User.findOne({ refreshToken: hashedToken });
       if (user) {
         user.refreshToken = null;
         await user.save();
@@ -249,7 +254,13 @@ exports.forgotPassword = async (req, res) => {
     await user.save();
 
     const resetLink = `${process.env.SERVER_URL}/api/auth/reset-password/${raw}`;
-    sendEmail(email, "Reset Password", resetLink);
+    const resetPage = `${CLIENT_URL}/reset-password/${raw}`;
+    await sendEmail(
+      email,
+      "Reset your password",
+      `<p>Click the link below to reset your password. This link expires in 15 minutes.</p>
+       <p><a href="${resetPage}">${resetPage}</a></p>`
+    );
 
     res.json({ message: "Password reset link sent" });
   } catch (err) {

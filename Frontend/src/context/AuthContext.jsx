@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { authAPI } from "../services/api";
 
 const AuthContext = createContext(null);
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
@@ -15,16 +14,8 @@ export function AuthProvider({ children }) {
 
     const checkAuth = async () => {
         try {
-            const res = await fetch(`${API_URL}/auth/me`, {
-                credentials: "include",
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                setUser(data.user);
-            } else {
-                setUser(null);
-            }
+            const data = await authAPI.me();
+            setUser(data.user);
         } catch (err) {
             console.error("Auth check failed:", err);
             setUser(null);
@@ -34,47 +25,20 @@ export function AuthProvider({ children }) {
     };
 
     const login = async (email, password) => {
-        const res = await fetch(`${API_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ email, password }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.error || "Login failed");
-        }
-
+        const data = await authAPI.login(email, password);
         setUser(data.user);
         return data;
     };
 
     const register = async (name, email, password) => {
-        const res = await fetch(`${API_URL}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ name, email, password }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.error || "Registration failed");
-        }
-
+        const data = await authAPI.register(name, email, password);
         setUser(data.user);
         return data;
     };
 
     const logout = async () => {
         try {
-            await fetch(`${API_URL}/auth/logout`, {
-                method: "POST",
-                credentials: "include",
-            });
+            await authAPI.logout();
         } catch (err) {
             console.error("Logout error:", err);
         }

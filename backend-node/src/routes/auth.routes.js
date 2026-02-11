@@ -19,21 +19,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:4000"}/login?error=google_auth_failed`
-  }),
-  controller.oauthCallback
-);
-
-// GitHub OAuth
-router.get(
-  "/github",
-  passport.authenticate("github", { scope: ["user:email"] })
-);
-router.get(
-  "/github/callback",
-  passport.authenticate("github", {
-    session: false,
-    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:4000"}/login?error=github_auth_failed`
+    failureRedirect: `${process.env.CLIENT_URL || "http://localhost:5173"}/login?error=google_auth_failed`
   }),
   controller.oauthCallback
 );
