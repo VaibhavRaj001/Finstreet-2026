@@ -34,28 +34,26 @@ const EventsHero = ({ event }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [event]); 
+  }, [event]);
 
-  if (!event) return null; 
+  if (!event) return null;
 
   const isFlagship = event.type === "FLAGSHIP";
 
   return (
     <section className="relative h-screen w-full overflow-hidden bg-[#0F0F12]">
-      
       <img
         src="/Enigma_bck.png"
         alt="Event Background"
         className="absolute inset-0 h-full w-full object-cover opacity-80"
       />
 
-      
       <div className="absolute inset-0 bg-linear-to-b from-black/40 via-transparent to-black/80" />
 
       {/* Main Content Container */}
       <div className="relative z-10 mx-auto flex h-full max-w-[90%] flex-col justify-between pt-[15vh] pb-12 md:max-w-[85%]">
         {/* Top Section: Title */}
-        <div className="flex flex-col text-white">
+        <div className="flex flex-col text-white select-none">
           <h3 className="mb-1 ml-1 text-[10px] font-medium tracking-[0.2em] text-gray-300 md:text-xs">
             {isFlagship ? "INTRODUCING OUR" : "INTRODUCING "}
           </h3>
