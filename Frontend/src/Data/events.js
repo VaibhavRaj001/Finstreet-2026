@@ -5,11 +5,11 @@ export const eventsData = [
     subtitle: "The Art of Strategic Thinking",
     date: "18th Jan",
     fullDate: "March 6, 2026",
-    time: "10:00 AM", // Placeholder
+    time: "10:00 AM", 
     venue: "Seminar Hall 1",
     fullVenue: "SEMINAR HALL 1 , RND Building",
     location: "BIT Mesra , Ranchi",
-    image: "/EnigmaPoster.png",
+    image: "/EnigmaPoster.jpg",
     description:
       "Question, Analyze, And Lead. Where Strategy meets Uncertainty and Ideas turn into Decisive Solutions.",
     type: "FLAGSHIP",
@@ -19,12 +19,12 @@ export const eventsData = [
     title: "ESTIMANIA",
     subtitle: "Observe, Assess, And Decide",
     date: "19th Jan",
-    fullDate: "March 7, 2026", // Placeholder
-    time: "10:00 AM", // Placeholder
+    fullDate: "March 7, 2026", 
+    time: "10:00 AM", 
     venue: "Room no.-233A",
-    fullVenue: "Room no.-233A, Main Building", // Placeholder
+    fullVenue: "Room no.-233A, Main Building", 
     location: "BIT Mesra , Ranchi",
-    image: "/EnigmaPoster.png",
+    image: "/EnigmaPoster.jpg",
     description:
       "Observe, Assess, And Decide. Test your estimation skills in this fun and challenging event.",
     type: "FINSTREET",
@@ -34,12 +34,12 @@ export const eventsData = [
     title: "BEHIND THE STUMPS",
     subtitle: "Balance Numbers, Tactics And Team Dynamics",
     date: "19th Jan",
-    fullDate: "March 7, 2026", // Placeholder
-    time: "02:00 PM", // Placeholder
+    fullDate: "March 7, 2026", 
+    time: "02:00 PM", 
     venue: "Room no.-234",
-    fullVenue: "Room no.-234, Main Building", // Placeholder
+    fullVenue: "Room no.-234, Main Building", 
     location: "BIT Mesra , Ranchi",
-    image: "/EnigmaPoster.png",
+    image: "/BTS_Poster.jpg",
     description:
       "Balance Numbers, Tactics And Team Dynamics. An IPL auction simulation.",
     type: "FINSTREET",
@@ -49,12 +49,12 @@ export const eventsData = [
     title: "ARTH ANARTH",
     subtitle: "Fun Finance / Tambola mix Game",
     date: "20th Jan",
-    fullDate: "March 8, 2026", // Placeholder
-    time: "10:00 AM", // Placeholder
+    fullDate: "March 8, 2026", 
+    time: "10:00 AM", 
     venue: "Main Audi",
-    fullVenue: "Main Auditorium", // Placeholder
+    fullVenue: "Main Auditorium", 
     location: "BIT Mesra , Ranchi",
-    image: "/EnigmaPoster.png",
+    image: "/ArthAnarth_Poster.jpg",
     description:
       "Fun Finance / Tambola mix Game. A light-hearted event with a financial twist.",
     type: "FINSTREET",
@@ -64,10 +64,10 @@ export const eventsData = [
     title: "WORKSHOP",
     subtitle: "Workshop on Options and Futures Trading",
     date: "21st Jan",
-    fullDate: "March 9, 2026", // Placeholder
-    time: "10:00 AM", // Placeholder
+    fullDate: "March 9, 2026", 
+    time: "10:00 AM", 
     venue: "Lab Complex",
-    fullVenue: "Lab Complex", // Placeholder
+    fullVenue: "Lab Complex", 
     location: "BIT Mesra , Ranchi",
     image: "/EnigmaPoster.png",
     description:
@@ -79,10 +79,10 @@ export const eventsData = [
     title: "SPLIT & STEAL",
     subtitle: "A Fun event where You can Split or Steal",
     date: "21st Jan",
-    fullDate: "March 9, 2026", // Placeholder
-    time: "02:00 PM", // Placeholder
+    fullDate: "March 9, 2026", 
+    time: "02:00 PM", 
     venue: "Lab Complex",
-    fullVenue: "Lab Complex", // Placeholder
+    fullVenue: "Lab Complex", 
     location: "BIT Mesra , Ranchi",
     image: "/EnigmaPoster.png",
     description:
@@ -94,10 +94,10 @@ export const eventsData = [
     title: "INVESTOR'S ARENA",
     subtitle: "Test Your Investment Skills",
     date: "21st Jan",
-    fullDate: "March 9, 2026", // Placeholder
-    time: "04:00 PM", // Placeholder
+    fullDate: "March 9, 2026", 
+    time: "04:00 PM", 
     venue: "Lab Complex",
-    fullVenue: "Lab Complex", // Placeholder
+    fullVenue: "Lab Complex", 
     location: "BIT Mesra , Ranchi",
     image: "/EnigmaPoster.png",
     description: "Test Your Investment Skills, Enter The Arena and Win Big.",

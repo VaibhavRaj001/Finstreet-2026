@@ -2,16 +2,37 @@ import React from "react";
 
 const TOPICS = ["STOCK MARKET", "PERSONAL FINANCE", "ENTREPRENEURSHIP"];
 
-const SPEAKERS = Array(6).fill({
-  name: "Sakchi Jain",
-  image: "/SakchiJain.jpg",
-  role: "Speaker",
-});
+const SPEAKERS = [
+  {
+    name: "Sakchi Jain",
+    image: "/SakchiJain.jpg",
+    role: "Speaker",
+  },
+  {
+    name: "Koyesha Mukherjee",
+    image: "/Koyesha.jpg",
+    role: "Speaker",
+  },
+  {
+    name: "Virendra Verma",
+    image: "/Virendra.jpg",
+    role: "Speaker",
+  },
+  {
+    name: "Abhishek Kumar",
+    image: "/Abhishek.jpg",
+    role: "Speaker",
+  },
+  {
+    name: "Uzair Ahmad",
+    image: "/Uzair.jpg",
+    role: "Speaker",
+  },
+];
 
 function OurSpeaker() {
   return (
     <section className="relative w-full overflow-hidden py-24 text-white">
-      {/* Background Layer */}
       <div className="absolute inset-0 z-10 ">
         <div className="w-screen" />
         <img
@@ -22,7 +43,6 @@ function OurSpeaker() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-[90%] md:max-w-[85%]">
-        {/* Header */}
         <div className="mb-16">
           <h1 className="font-antonio text-[12vw] font-medium leading-none text-transparent uppercase bg-clip-text bg-linear-to-r from-[#EDEDED] to-[#2a2a2eac] md:text-8xl">
             Our Speakers
@@ -30,7 +50,6 @@ function OurSpeaker() {
         </div>
 
         <div className="flex flex-col gap-16 lg:flex-row lg:justify-between">
-          {/* Topics List */}
           <div className="flex flex-col gap-8 lg:w-1/3">
             <h2 className="text-2xl font-bold tracking-tight text-[#D4AF37] md:text-4xl">
               // ALL TOPICS
@@ -47,7 +66,6 @@ function OurSpeaker() {
             </div>
           </div>
 
-          {/* Speakers Grid */}
           <div className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-3 lg:w-1/2">
             {SPEAKERS.map((speaker, index) => (
               <div

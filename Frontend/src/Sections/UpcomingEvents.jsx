@@ -52,7 +52,7 @@ const UpcomingEvents = () => {
               onClick={nextSlide}
               className="rounded-full border border-gray-700 p-3 text-white transition-colors hover:border-[#D4AF37] hover:text-[#D4AF37]"
             >
-              <ChevronRight className="h-6 w-6" />
+              <ChevronRight className="h-6 w-6"/>
             </button>
           </div>
         </div>
