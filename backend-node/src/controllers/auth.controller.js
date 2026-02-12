@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Team = require("../models/team");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -15,7 +16,7 @@ const cookieOptions = (maxAgeMs) => ({
   httpOnly: true,
   sameSite: "lax",
   secure: isProd,
-  maxAge: maxAgeMs
+  maxAge: maxAgeMs,
 });
 
 const hashToken = (token) =>
@@ -36,22 +37,32 @@ const sanitizeUser = (user) => {
 
 const issueTokens = async (res, user) => {
   const accessToken = jwt.sign(
-    { id: user._id, email: user.email, name: user.name, role: user.role, provider: user.provider },
+    {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      provider: user.provider,
+    },
     process.env.JWT_SECRET,
-    { expiresIn: ACCESS_TTL }
+    { expiresIn: ACCESS_TTL },
   );
 
   const refreshToken = jwt.sign(
     { id: user._id },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: REFRESH_TTL }
+    { expiresIn: REFRESH_TTL },
   );
 
   user.refreshToken = hashToken(refreshToken);
   await user.save();
 
   res.cookie("accessToken", accessToken, cookieOptions(15 * 60 * 1000));
-  res.cookie("refreshToken", refreshToken, cookieOptions(7 * 24 * 60 * 60 * 1000));
+  res.cookie(
+    "refreshToken",
+    refreshToken,
+    cookieOptions(7 * 24 * 60 * 60 * 1000),
+  );
 
   return { accessToken, refreshToken };
 };
@@ -67,7 +78,9 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: "All fields required" });
 
     if (password.length < 8)
-      return res.status(400).json({ error: "Password must be at least 8 characters" });
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 8 characters" });
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
@@ -80,7 +93,7 @@ exports.register = async (req, res) => {
       email,
       password: hashedPassword,
       provider: "local",
-      isVerified: true
+      isVerified: true,
     });
 
     const tokens = await issueTokens(res, user);
@@ -88,7 +101,7 @@ exports.register = async (req, res) => {
     return res.status(201).json({
       message: "Registered successfully",
       user: sanitizeUser(user),
-      ...tokens
+      ...tokens,
     });
   } catch (err) {
     console.error(err);
@@ -111,15 +124,17 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
-      return res.status(401).json({ error: "Invalid credentials" });
+    if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
 
     const tokens = await issueTokens(res, user);
+    const team = await Team.findOne({ "members.user": user._id });
+    const userData = sanitizeUser(user);
+    userData.team = team;
 
     res.json({
       message: "Login successful",
-      user: sanitizeUser(user),
-      ...tokens
+      user: userData,
+      ...tokens,
     });
   } catch (err) {
     console.error(err);
@@ -136,7 +151,11 @@ exports.me = async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) return res.status(404).json({ error: "User not found" });
 
-  res.json({ user: sanitizeUser(user) });
+  const team = await Team.findOne({ "members.user": user._id });
+  const userData = sanitizeUser(user);
+  userData.team = team;
+
+  res.json({ user: userData });
 };
 
 /* =========================
@@ -151,10 +170,12 @@ exports.refreshToken = async (req, res) => {
 
     const payload = jwt.verify(incoming, process.env.JWT_REFRESH_SECRET);
     const hashedToken = hashToken(incoming);
-    const user = await User.findOne({ _id: payload.id, refreshToken: hashedToken });
+    const user = await User.findOne({
+      _id: payload.id,
+      refreshToken: hashedToken,
+    });
 
-    if (!user)
-      return res.status(403).json({ error: "Invalid refresh token" });
+    if (!user) return res.status(403).json({ error: "Invalid refresh token" });
 
     const tokens = await issueTokens(res, user);
     res.json({ ...tokens });
@@ -203,8 +224,7 @@ exports.oauthCallback = async (req, res) => {
     const image = profile.photos?.[0]?.value;
     const name = profile.displayName || profile.username || "User";
 
-    if (!email)
-      return res.redirect(`${CLIENT_URL}/login?error=email_required`);
+    if (!email) return res.redirect(`${CLIENT_URL}/login?error=email_required`);
 
     let user = await User.findOne({ email });
 
@@ -216,7 +236,7 @@ exports.oauthCallback = async (req, res) => {
         provider,
         providerId: profile.id,
         image,
-        isVerified: true
+        isVerified: true,
       });
     } else {
       user.provider = provider;
@@ -244,8 +264,7 @@ exports.forgotPassword = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (!user)
-      return res.json({ message: "If email exists, reset link sent" });
+    if (!user) return res.json({ message: "If email exists, reset link sent" });
 
     const { raw, hashed } = generateToken();
 
@@ -259,7 +278,7 @@ exports.forgotPassword = async (req, res) => {
       email,
       "Reset your password",
       `<p>Click the link below to reset your password. This link expires in 15 minutes.</p>
-       <p><a href="${resetPage}">${resetPage}</a></p>`
+       <p><a href="${resetPage}">${resetPage}</a></p>`,
     );
 
     res.json({ message: "Password reset link sent" });
@@ -281,7 +300,7 @@ exports.resetPassword = async (req, res) => {
 
     const user = await User.findOne({
       resetToken: hashedToken,
-      resetTokenExpiry: { $gt: Date.now() }
+      resetTokenExpiry: { $gt: Date.now() },
     });
 
     if (!user)
@@ -298,4 +317,3 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-

@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "create-admin": "node src/scripts/create-admin.js"
   },
@@ -12,7 +13,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "nodemailer": "^6.9.16",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -21,6 +21,7 @@
     "express-rate-limit": "^7.4.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.5",
+    "nodemailer": "^6.10.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0"
   },
