@@ -47,6 +47,10 @@ app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/events", apiLimiter, eventRoutes);
 app.use("/api/teams", apiLimiter, teamRoutes);
 
+app.get("/", (req, res) => {
+  res.json({ message: "Backend is up. See /api/health" });
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });
 });
