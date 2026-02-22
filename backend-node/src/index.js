@@ -21,8 +21,8 @@ const clientOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 app.use(
   cors({
     origin: clientOrigin,
-    credentials: true
-  })
+    credentials: true,
+  }),
 );
 app.use(express.json());
 app.use(cookieParser());
@@ -33,14 +33,14 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 50,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 100,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 
 app.use("/api/auth", authLimiter, authRoutes);
