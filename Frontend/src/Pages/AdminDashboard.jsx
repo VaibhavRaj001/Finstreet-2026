@@ -23,7 +23,7 @@ export default function AdminDashboard() {
             }
             fetchEvents();
         }
-    }, [isAdmin, authLoading]);
+    }, [isAdmin, authLoading, navigate]);
 
     const fetchEvents = async () => {
         try {

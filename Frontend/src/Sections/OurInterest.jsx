@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { Wallet, Briefcase, TrendingUp, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const fields = [
@@ -95,7 +95,7 @@ const OurInterest = () => {
                 <div className="flex gap-6 w-full justify-center px-0 md:px-12">
                     <AnimatePresence mode='popLayout'>
                         {visibleFields.map((field) => (
-                             <motion.div
+                         <Motion.div
                                 key={field.id}
                                 layout
                                 initial={{ opacity: 0, scale: 0.9, x: 50 }}
@@ -116,7 +116,7 @@ const OurInterest = () => {
                                         Learn More
                                     </a>
                                 </div>
-                            </motion.div>
+                        </Motion.div>
                         ))}
                     </AnimatePresence>
                 </div>

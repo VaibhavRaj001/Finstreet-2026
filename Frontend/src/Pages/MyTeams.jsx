@@ -20,7 +20,7 @@ export default function MyTeams() {
         if (isAuthenticated) {
             fetchTeams();
         }
-    }, [isAuthenticated, authLoading]);
+    }, [isAuthenticated, authLoading, navigate]);
 
     const fetchTeams = async () => {
         try {

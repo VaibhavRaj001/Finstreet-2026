@@ -24,7 +24,7 @@ export default function CreateTeam() {
         if (isAuthenticated) {
             fetchEvents();
         }
-    }, [isAuthenticated, authLoading]);
+    }, [isAuthenticated, authLoading, navigate]);
 
     const fetchEvents = async () => {
         try {

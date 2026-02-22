@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom"; 
 import EventCard from "../Components/EventCard";
@@ -60,13 +60,13 @@ const UpcomingEvents = () => {
         {/* Carousel Container */}
         <div className="relative">
           {/* Cards Grid */}
-          <motion.div
+          <Motion.div
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             layout
           >
             <AnimatePresence mode="popLayout">
               {visibleEvents.slice(0, 3).map((event, idx) => (
-                <motion.div
+                <Motion.div
                   key={event.id}
                   layout
                   initial={{ x: 100, opacity: 0 }}
@@ -78,10 +78,10 @@ const UpcomingEvents = () => {
                   <Link to={`/events/${event.id}`}>
                     <EventCard event={event} />
                   </Link>
-                </motion.div>
+                </Motion.div>
               ))}
             </AnimatePresence>
-          </motion.div>
+          </Motion.div>
 
           <div className="mt-8 flex justify-center gap-4 md:hidden">
             <button

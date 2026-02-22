@@ -15,19 +15,19 @@ export default function JoinTeam() {
     const [success, setSuccess] = useState("");
 
     useEffect(() => {
+        const fetchTeam = async () => {
+            try {
+                const data = await teamAPI.getByInviteCode(inviteCode);
+                setTeam(data.team);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchTeam();
     }, [inviteCode]);
-
-    const fetchTeam = async () => {
-        try {
-            const data = await teamAPI.getByInviteCode(inviteCode);
-            setTeam(data.team);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleJoin = async () => {
         if (!isAuthenticated) {

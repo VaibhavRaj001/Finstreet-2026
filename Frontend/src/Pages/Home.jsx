@@ -1,4 +1,3 @@
-import { useAuth } from "../context/AuthContext";
 import Navbar from "../Sections/Navbar";
 import HeroSection from "../Sections/HeroSection";
 import Footer from "../Sections/Footer";
@@ -7,8 +6,6 @@ import OurInterest from "../Sections/OurInterest";
 import SectionSeperator from "../Components/SectionSeperator";
 
 function Home() {
-  const { isAuthenticated } = useAuth();
-
   return (
     <div className="min-h-screen max-w-fit flex flex-col relative overflow-hidden">
       <Navbar />

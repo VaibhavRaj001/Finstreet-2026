@@ -1,40 +1,36 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { MapPin } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
+
+const computeTimeLeft = (targetDate) => {
+  const difference = +targetDate - +new Date();
+  if (difference <= 0) {
+    return { days: 0, hours: 0, mins: 0, seconds: 0 };
+  }
+
+  return {
+    days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    mins: Math.floor((difference / 1000 / 60) % 60),
+    seconds: Math.floor((difference / 1000) % 60),
+  };
+};
 
 const EventsHero = ({ event }) => {
-  const targetDate =
-    event && event.fullDate ? new Date(event.fullDate) : new Date("2026-03-06");
+  const targetDate = useMemo(
+    () => (event?.fullDate ? new Date(event.fullDate) : new Date("2026-03-06")),
+    [event],
+  );
 
-  const calculateTimeLeft = () => {
-    const difference = +targetDate - +new Date();
-    let timeLeft = {
-      days: 0,
-      hours: 0,
-      mins: 0,
-      seconds: 0,
-    };
-
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        mins: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-    return timeLeft;
-  };
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  const [timeLeft, setTimeLeft] = useState(() => computeTimeLeft(targetDate));
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(calculateTimeLeft());
+      setTimeLeft(computeTimeLeft(targetDate));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [event]);
+  }, [targetDate]);
 
   if (!event) return null;
 
@@ -116,7 +112,7 @@ const EventsHero = ({ event }) => {
             <div className="flex flex-col items-center gap-1">
               <div className="relative h-9 w-12 overflow-hidden md:h-12 md:w-16">
                 <AnimatePresence mode="popLayout">
-                  <motion.span
+                  <Motion.span
                     key={timeLeft.seconds}
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
@@ -125,7 +121,7 @@ const EventsHero = ({ event }) => {
                     className="absolute inset-0 flex items-center justify-center font-antonio text-3xl text-[#D4AF37] md:text-5xl"
                   >
                     {String(timeLeft.seconds).padStart(2, "0")}
-                  </motion.span>
+                  </Motion.span>
                 </AnimatePresence>
               </div>
               <span className="text-[10px] text-gray-400 uppercase tracking-widest">
