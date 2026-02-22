@@ -1,8 +1,30 @@
 import React from "react";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 const EventDetails = ({ event }) => {
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
   if (!event) return null;
+
+  const handleAction = () => {
+    if (!isAuthenticated) {
+      navigate("/register");
+    } else if (!user?.team) {
+      navigate("/create-team");
+    } else {
+      navigate("/my-teams");
+    }
+  };
+
+  const getButtonText = () => {
+    if (!isAuthenticated) return "SIGN UP";
+    if (!user?.team) return "CREATE/JOIN TEAM";
+    return "MY TEAM";
+  };
 
   return (
     <section className="relative w-full bg-[#0F0F12] py-20 px-6 md:px-12 lg:px-20">
@@ -53,8 +75,11 @@ const EventDetails = ({ event }) => {
             </div>
 
             <div className="flex flex-col gap-4 sm:flex-row">
-              <button className="flex items-center justify-center gap-2 rounded bg-[#D4AF37] px-6 py-3 font-bold text-black transition-colors hover:bg-[#b08d2b]">
-                ENROLL NOW
+              <button
+                onClick={handleAction}
+                className="flex items-center justify-center gap-2 rounded bg-[#D4AF37] px-6 py-3 font-bold text-black transition-colors hover:bg-[#b08d2b]"
+              >
+                {getButtonText()}
                 <ArrowUpRight className="h-4 w-4" />
               </button>
               <button className="flex items-center justify-center gap-2 rounded border border-white/20 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/10">

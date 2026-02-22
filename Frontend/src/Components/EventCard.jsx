@@ -1,7 +1,32 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
 
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+
 const EventCard = ({ event }) => {
+  const { isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleAction = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      navigate("/register");
+    } else if (!user?.team) {
+      navigate("/create-team");
+    } else {
+      navigate(`/events/${event.id}`);
+    }
+  };
+
+  const getButtonText = () => {
+    if (!isAuthenticated) return "SIGN UP";
+    if (!user?.team) return "CREATE/JOIN TEAM";
+    return "VIEW MORE";
+  };
+
   return (
     <div className="group relative h-[400px] w-full min-w-[300px] overflow-hidden rounded-xl border border-[#D4AF37]/20 bg-gray-900 shadow-lg transition-transform hover:scale-[1.02]">
       {/* Background Image */}
@@ -33,8 +58,11 @@ const EventCard = ({ event }) => {
             {event.description}
           </p>
 
-          <button className="flex items-center gap-2 rounded border border-[#D4AF37]/50 bg-black/40 px-4 py-2 text-xs font-bold text-[#D4AF37] backdrop-blur-md transition-colors hover:bg-[#D4AF37] hover:text-black">
-            VIEW MORE
+          <button
+            onClick={handleAction}
+            className="flex items-center gap-2 rounded border border-[#D4AF37]/50 bg-black/40 px-4 py-2 text-xs font-bold text-[#D4AF37] backdrop-blur-md transition-colors hover:bg-[#D4AF37] hover:text-black"
+          >
+            {getButtonText()}
             <ArrowUpRight className="h-3 w-3" />
           </button>
         </div>
