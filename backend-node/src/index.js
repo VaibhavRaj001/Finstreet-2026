@@ -12,7 +12,6 @@ const eventRoutes = require("./routes/event.routes");
 const teamRoutes = require("./routes/team.routes");
 
 const app = express();
-connectDB();
 
 // Trust proxy is needed when running behind reverse proxies so secure cookies are honored
 app.set("trust proxy", 1);
@@ -56,9 +55,27 @@ app.get("/api/health", (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || "0.0.0.0";
+const HOST = process.env.HOST || "localhost";
+
+const requiredEnv = ["MONGO_URI", "JWT_SECRET", "JWT_REFRESH_SECRET", "CLIENT_URL", "SERVER_URL"];
+const missing = requiredEnv.filter((key) => !process.env[key]);
+
+if (missing.length) {
+  console.error(`Missing env vars: ${missing.join(", ")}`);
+  process.exit(1);
+}
 
 // Bind to 0.0.0.0 so Render/containers can reach the service
-app.listen(PORT, HOST, () => {
-  console.log(`Server running on http://${HOST}:${PORT}`);
-});
+const start = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, HOST, () => {
+      console.log(`Server running on http://${HOST}:${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err.message);
+    process.exit(1);
+  }
+};
+
+start();

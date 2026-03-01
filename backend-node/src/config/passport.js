@@ -8,7 +8,7 @@ const {
 
 const attachPassportStrategies = (passport) => {
   // Only attach Google strategy if credentials are configured
-  if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET) {
+  if (GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET && SERVER_URL) {
     passport.use(
       new GoogleStrategy(
         {
@@ -23,7 +23,7 @@ const attachPassportStrategies = (passport) => {
     );
     console.log("✓ Google OAuth strategy configured");
   } else {
-    console.log("⚠ Google OAuth not configured (missing credentials)");
+    console.log("⚠ Google OAuth not configured (missing credentials or SERVER_URL)");
   }
 
 };

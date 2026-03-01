@@ -14,7 +14,7 @@ const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 const cookieOptions = (maxAgeMs) => ({
   httpOnly: true,
-  sameSite: "lax",
+  sameSite: isProd ? "none" : "lax",
   secure: isProd,
   maxAge: maxAgeMs,
 });
@@ -101,7 +101,7 @@ exports.register = async (req, res) => {
     return res.status(201).json({
       message: "Registered successfully",
       user: sanitizeUser(user),
-      ...tokens,
+      accessToken: tokens.accessToken,
     });
   } catch (err) {
     console.error(err);
@@ -134,7 +134,7 @@ exports.login = async (req, res) => {
     res.json({
       message: "Login successful",
       user: userData,
-      ...tokens,
+      accessToken: tokens.accessToken,
     });
   } catch (err) {
     console.error(err);
@@ -178,7 +178,7 @@ exports.refreshToken = async (req, res) => {
     if (!user) return res.status(403).json({ error: "Invalid refresh token" });
 
     const tokens = await issueTokens(res, user);
-    res.json({ ...tokens });
+    res.json({ accessToken: tokens.accessToken });
   } catch (err) {
     console.error(err);
     res.status(403).json({ error: "Expired refresh token" });
@@ -293,6 +293,11 @@ exports.forgotPassword = async (req, res) => {
 ========================= */
 exports.resetPassword = async (req, res) => {
   try {
+    const newPassword = req.body.password;
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters" });
+    }
+
     const hashedToken = crypto
       .createHash("sha256")
       .update(req.params.token)
@@ -306,7 +311,7 @@ exports.resetPassword = async (req, res) => {
     if (!user)
       return res.status(400).json({ error: "Invalid or expired token" });
 
-    user.password = await bcrypt.hash(req.body.password, 10);
+  user.password = await bcrypt.hash(newPassword, 10);
     user.resetToken = null;
     user.resetTokenExpiry = null;
     await user.save();
