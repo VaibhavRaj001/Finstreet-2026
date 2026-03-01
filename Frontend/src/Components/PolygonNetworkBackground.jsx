@@ -29,7 +29,6 @@ const PolygonNetworkBackground = () => {
     renderer.setClearColor(0x0a0802, 1);
     container.appendChild(renderer.domElement);
 
-    // Base distorted sphere geometry
     const baseGeometry = new THREE.SphereGeometry(
       35,
       10,
@@ -55,23 +54,21 @@ const PolygonNetworkBackground = () => {
 
     baseGeometry.computeVertexNormals();
 
-    // Wireframe setup
     const wireframeGeo = new THREE.WireframeGeometry(baseGeometry);
     const lineGeometry = new LineSegmentsGeometry();
     lineGeometry.fromWireframeGeometry(wireframeGeo);
 
     const lineMaterial = new LineMaterial({
-      color: 0xdddddd,
+      color: 0xe9d48b,
       linewidth: 2.5,
       transparent: true,
-      opacity: 0.20,
+      opacity: 0.2,
       resolution: new THREE.Vector2(window.innerWidth, window.innerHeight),
     });
 
     const wireMesh = new Line2(lineGeometry, lineMaterial);
     wireMesh.rotation.x = -Math.PI / 1.8;
 
-    // Infinite tunnel: Before + After camera
     const tunnelMeshes = [];
     const TUNNEL_LENGTH = 35;
     const MESH_COUNT = 4;
@@ -94,9 +91,6 @@ const PolygonNetworkBackground = () => {
       const heroHeight = rect.height;
       const heroTop = rect.top;
 
-      // Calculate how much of the hero is visible or scrolled past
-      // scrollFraction is 0 when hero top is at viewport top
-      // scrollFraction is 1 when hero bottom is at viewport top
       let scrollFraction = -heroTop / heroHeight;
       scrollFraction = Math.min(Math.max(scrollFraction, 0), 1);
 
@@ -115,7 +109,7 @@ const PolygonNetworkBackground = () => {
       tunnelMeshes.forEach((m) => {
         m.rotation.y += 0.0015;
 
-        // User scrolling forward (down)
+
         if (camera.position.z - m.position.z > TUNNEL_LENGTH * 0.6) {
           m.position.z += TUNNEL_LENGTH * MESH_COUNT;
         }
