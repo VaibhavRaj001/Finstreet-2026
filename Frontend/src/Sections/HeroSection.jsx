@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import PolygonNetworkBackground from "../Components/PolygonNetworkBackground";
 
 const HeroSection = () => {
   const { isAuthenticated } = useAuth();
@@ -11,10 +12,13 @@ const HeroSection = () => {
         <img
           src="./heroSection.svg"
           alt="Background Decoration"
-          className="w-full h-full opacity-90"
+          className="hidden md:block w-full h-full opacity-90"
         />
-
         <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+
+        <div className="md:hidden block">
+          <PolygonNetworkBackground />
+        </div>
       </div>
 
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 py-24 lg:py-0 h-full min-h-screen flex flex-col lg:block justify-center">
