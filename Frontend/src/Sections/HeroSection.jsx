@@ -1,10 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import PolygonNetworkBackground from "../Components/PolygonNetworkBackground";
 
 const HeroSection = () => {
   const { isAuthenticated } = useAuth();
+
+  const stars = React.useMemo(() => {
+    return [...Array(40)].map(() => ({
+      top: `${Math.random() * 100}%`,
+      left: `${Math.random() * 100}%`,
+      duration: `${2 + Math.random() * 4}s`,
+      delay: `${Math.random() * -5}s`, 
+      opacity: 0.3 + Math.random() * 0.7,
+    }));
+  }, []);
 
   return (
     <section className="relative w-full min-h-screen overflow-hidden flex flex-col justify-center">
@@ -12,13 +21,28 @@ const HeroSection = () => {
         <img
           src="./heroSection.svg"
           alt="Background Decoration"
-          className="hidden md:block w-full h-full opacity-90"
+          className="hidden md:block w-full h-full opacity-90 object-fill object-center"
         />
-        <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
 
-        <div className="md:hidden block">
-          <PolygonNetworkBackground />
+        <div className="md:hidden h-full absolute inset-0 bg-[#060608] overflow-hidden">
+          <div className="absolute inset-0 bg-linear-to-b from-amber-500/5 to-transparent"></div>
+          {stars.map((star, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-amber-400 rounded-full animate-twinkle"
+              style={{
+                top: star.top,
+                left: star.left,
+                "--twinkle-duration": star.duration,
+                "--twinkle-delay": star.delay,
+                opacity: star.opacity,
+              }}
+            ></div>
+          ))}
+
         </div>
+
+        <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-12 py-24 lg:py-0 h-full min-h-screen flex flex-col lg:block justify-center">
