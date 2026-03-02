@@ -1,21 +1,41 @@
 import React, { useState } from "react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import EventCard from "../Components/EventCard";
-import { eventsData } from "../Data/events"; 
+import { eventsData } from "../Data/events";
 
 const UpcomingEvents = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
 
   const nextSlide = () => {
+    setDirection(1);
     setCurrentIndex((prev) => (prev + 1) % eventsData.length);
   };
 
   const prevSlide = () => {
+    setDirection(-1);
     setCurrentIndex(
       (prev) => (prev - 1 + eventsData.length) % eventsData.length,
     );
+  };
+
+  const variants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 100 : -100,
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 100 : -100,
+      opacity: 0,
+    }),
   };
 
   const getVisibleEvents = () => {
@@ -52,36 +72,42 @@ const UpcomingEvents = () => {
               onClick={nextSlide}
               className="rounded-full border border-gray-700 p-3 text-white transition-colors hover:border-[#D4AF37] hover:text-[#D4AF37]"
             >
-              <ChevronRight className="h-6 w-6"/>
+              <ChevronRight className="h-6 w-6" />
             </button>
           </div>
         </div>
 
         {/* Carousel Container */}
-        <div className="relative">
+        <div className="relative h-[480px]">
           {/* Cards Grid */}
-          <Motion.div
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-            layout
-          >
-            <AnimatePresence mode="popLayout">
-              {visibleEvents.slice(0, 3).map((event, idx) => (
-                <Motion.div
-                  key={event.id}
-                  layout
-                  initial={{ x: 100, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -100, opacity: 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  className={`${idx === 2 ? "hidden lg:block" : ""} ${idx === 1 ? "hidden sm:block" : ""} block w-full`}
-                >
-                  <Link to={`/events/${event.id}`}>
-                    <EventCard event={event} />
-                  </Link>
-                </Motion.div>
-              ))}
+          <div className="relative w-full h-full overflow-hidden">
+            <AnimatePresence initial={false} custom={direction}>
+              <Motion.div
+                key={currentIndex}
+                custom={direction}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 300, damping: 30 },
+                  opacity: { duration: 0.2 },
+                }}
+                className="absolute inset-0 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              >
+                {visibleEvents.slice(0, 3).map((event, idx) => (
+                  <div
+                    key={event.id}
+                    className={`${idx === 2 ? "hidden lg:block" : ""} ${idx === 1 ? "hidden sm:block" : ""} block w-full`}
+                  >
+                    <Link to={`/events/${event.id}`}>
+                      <EventCard event={event} />
+                    </Link>
+                  </div>
+                ))}
+              </Motion.div>
             </AnimatePresence>
-          </Motion.div>
+          </div>
 
           <div className="mt-8 flex justify-center gap-4 md:hidden">
             <button

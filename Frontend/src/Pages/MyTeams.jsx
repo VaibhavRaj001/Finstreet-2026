@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { teamAPI } from "../services/api";
-import Alert from "../components/Alert";
+import Alert from "../Components/Alert";
 
 export default function MyTeams() {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
@@ -38,7 +38,7 @@ export default function MyTeams() {
   const fetchTeams = async () => {
     try {
       const data = await teamAPI.getMyTeams();
-      setTeams(data.teams);
+      setTeams(data.teams || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -171,9 +171,11 @@ export default function MyTeams() {
           <div className="space-y-4">
             {teams.map((team) => {
               const isLead = team.members.find(
-                (m) => (m.user._id || m.user) === user._id && m.role === "lead",
+                (m) =>
+                  (m.user._id || m.user) === user?._id && m.role === "lead",
               );
 
+              if (!team.event) return null;
               return (
                 <div
                   key={team._id}

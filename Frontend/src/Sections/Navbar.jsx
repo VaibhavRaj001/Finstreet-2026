@@ -2,10 +2,11 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import ContactModal from "../Components/ContactModal";
 import { useAuth } from "../context/AuthContext";
+import { useModal } from "../context/ModalContext";
 
 function Navbar() {
   const { user, isAuthenticated, isAdmin, logout, loading } = useAuth();
-  const [isContactOpen, setIsContactOpen] = useState(false);
+  const { isContactOpen, openContact, closeContact } = useModal();
 
   return (
     <div className="sticky top-0 z-50 mx-0 my-0 w-full rounded-none border px-4 py-2 md:text-xs  text-[10px] items-center bg-linear-to-r from-white/5 via-white/20 to-white/5 backdrop-blur-lg border-white/25 shadow-xl md:static md:mx-10 md:my-4 md:w-auto md:rounded-[10px] md:px-4 md:py-2">
@@ -29,7 +30,7 @@ function Navbar() {
           </Link>
 
           <div
-            onClick={() => setIsContactOpen(true)}
+            onClick={openContact}
             className="flex gap-2 items-center p-2 hover:bg-[#474028] cursor-pointer border-[1.34px] rounded-[5px] border-[#4C3C0C]"
           >
             Contact
@@ -108,10 +109,7 @@ function Navbar() {
         </div>
       </div>
 
-      <ContactModal
-        isOpen={isContactOpen}
-        onClose={() => setIsContactOpen(false)}
-      />
+      <ContactModal isOpen={isContactOpen} onClose={closeContact} />
     </div>
   );
 }

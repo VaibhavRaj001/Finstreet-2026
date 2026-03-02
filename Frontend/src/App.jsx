@@ -1,6 +1,7 @@
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ModalProvider } from "./context/ModalContext";
 
 // Pages
 import Home from "./Pages/Home";
@@ -16,19 +17,21 @@ import AdminDashboard from "./Pages/AdminDashboard";
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/events/:id" element={<EventPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/create-team" element={<CreateTeam />} />
-          <Route path="/join-team/:inviteCode" element={<JoinTeam />} />
-          <Route path="/my-teams" element={<MyTeams />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-        </Routes>
-      </BrowserRouter>
+      <ModalProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/events/:id" element={<EventPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/create-team" element={<CreateTeam />} />
+            <Route path="/join-team/:inviteCode" element={<JoinTeam />} />
+            <Route path="/my-teams" element={<MyTeams />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Routes>
+        </BrowserRouter>
+      </ModalProvider>
     </AuthProvider>
   );
 }

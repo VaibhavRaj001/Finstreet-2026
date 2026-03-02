@@ -2,10 +2,12 @@ import React from "react";
 import { ArrowUpRight, ChevronRight } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
+import { useModal } from "../context/ModalContext";
 import { useNavigate } from "react-router-dom";
 
 const EventDetails = ({ event }) => {
   const { isAuthenticated, user } = useAuth();
+  const { openContact } = useModal();
   const navigate = useNavigate();
 
   if (!event) return null;
@@ -82,7 +84,10 @@ const EventDetails = ({ event }) => {
                 {getButtonText()}
                 <ArrowUpRight className="h-4 w-4" />
               </button>
-              <button className="flex items-center justify-center gap-2 rounded border border-white/20 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/10">
+              <button
+                onClick={openContact}
+                className="flex items-center justify-center gap-2 rounded border border-white/20 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/10"
+              >
                 CONTACT US
                 <ChevronRight className="h-4 w-4" />
               </button>

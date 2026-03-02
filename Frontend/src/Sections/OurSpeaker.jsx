@@ -45,7 +45,7 @@ function OurSpeaker() {
       <div className="relative z-10 mx-auto max-w-[90%] md:max-w-[85%]">
         <div className="mb-16">
           <h1 className="font-antonio text-[12vw] font-medium leading-none text-transparent uppercase bg-clip-text bg-linear-to-r from-[#EDEDED] to-[#2a2a2eac] md:text-8xl">
-            Our Speakers
+            Our PAST Speakers
           </h1>
         </div>
 
