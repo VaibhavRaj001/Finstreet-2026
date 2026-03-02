@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { eventAPI, teamAPI } from "../services/api";
-import Alert from "../Components/Alert";
+import Alert from "../components/Alert";
 
 export default function CreateTeam() {
   const { isAuthenticated, loading: authLoading } = useAuth();
