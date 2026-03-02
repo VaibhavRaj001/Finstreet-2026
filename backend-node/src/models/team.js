@@ -10,7 +10,6 @@ const teamMemberSchema = new mongoose.Schema(
     },
     name: {
       type: String,
-      required: true,
     },
     role: {
       type: String,
