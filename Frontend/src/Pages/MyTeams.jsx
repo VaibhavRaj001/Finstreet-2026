@@ -12,12 +12,10 @@ export default function MyTeams() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Join Team State
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [joining, setJoining] = useState(false);
 
-  // Alert State
   const [alertConfig, setAlertConfig] = useState({
     isOpen: false,
     type: "success",
