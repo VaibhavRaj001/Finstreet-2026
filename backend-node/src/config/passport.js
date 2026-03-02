@@ -14,7 +14,7 @@ const attachPassportStrategies = (passport) => {
         {
           clientID: GOOGLE_CLIENT_ID,
           clientSecret: GOOGLE_CLIENT_SECRET,
-          callbackURL: `${SERVER_URL}api/auth/google/callback`
+          callbackURL: `${SERVER_URL}/api/auth/google/callback`
         },
         (accessToken, refreshToken, profile, done) => {
           return done(null, { provider: "google", profile });
