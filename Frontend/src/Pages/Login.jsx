@@ -94,7 +94,7 @@ export default function Login() {
 
                     <div className="mt-6 flex gap-4">
                         <a
-                            href={`${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/auth/google`}
+                            href={`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/google`}
                             className="flex-1 flex items-center justify-center gap-2 bg-white/5 border border-white/10 rounded-lg py-3 text-white hover:bg-white/10 transition-colors"
                         >
                             <svg className="w-5 h-5" viewBox="0 0 24 24">
