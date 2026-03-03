@@ -39,7 +39,9 @@ export default function CreateTeam() {
       const data = await eventAPI.getAll({ active: true });
       // Filter events with open registration
       const openEvents = data.events.filter(
-        (e) => new Date(e.registrationDeadline) > new Date(),
+        (e) =>
+          new Date(e.registrationDeadline) > new Date() &&
+          e.name.toLowerCase() !== "enigma",
       );
       setEvents(openEvents);
     } catch (err) {

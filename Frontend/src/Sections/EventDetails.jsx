@@ -15,7 +15,16 @@ const EventDetails = ({ event }) => {
   const handleAction = () => {
     if (!isAuthenticated) {
       navigate("/register");
-    } else if (!user?.team) {
+      return;
+    }
+
+    if (event.id === "enigma") {
+      window.location.href =
+        "https://unstop.com/o/yUb06ca?lb=1Eimu2z&utm_medium=Share&utm_source=competitions&utm_campaign=Financeclubbitm";
+      return;
+    }
+
+    if (!user?.team) {
       navigate("/create-team");
     } else {
       navigate("/my-teams");
