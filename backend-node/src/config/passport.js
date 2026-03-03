@@ -14,7 +14,7 @@ const attachPassportStrategies = (passport) => {
         {
           clientID: GOOGLE_CLIENT_ID,
           clientSecret: GOOGLE_CLIENT_SECRET,
-          callbackURL: "https://finstreet-2026-production-9a1d.up.railway.app/api/auth/google/callback"
+          callbackURL: `${SERVER_URL.replace(/\/$/, '')}/api/auth/google/callback`
         },
         (accessToken, refreshToken, profile, done) => {
           return done(null, { provider: "google", profile });
