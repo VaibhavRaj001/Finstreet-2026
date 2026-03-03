@@ -8,6 +8,15 @@ import { eventsData } from "../Data/events";
 const UpcomingEvents = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [windowWidth, setWindowWidth] = React.useState(
+    typeof window !== "undefined" ? window.innerWidth : 1200,
+  );
+
+  React.useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const nextSlide = () => {
     setDirection(1);
@@ -21,26 +30,30 @@ const UpcomingEvents = () => {
     );
   };
 
-  const variants = {
-    enter: (direction) => ({
-      x: direction > 0 ? 100 : -100,
-      opacity: 0,
-    }),
-    center: {
-      zIndex: 1,
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction) => ({
-      zIndex: 0,
-      x: direction < 0 ? 100 : -100,
-      opacity: 0,
-    }),
+  const isLg = windowWidth >= 1024;
+  const isMd = windowWidth >= 640 && windowWidth < 1024;
+
+  const getCardStyles = (idx) => {
+    if (isLg) {
+      // LG: Center (idx 1) is Front, Sides are Back
+      if (idx === 1) return { z: 100, scale: 1.05, opacity: 1, rotateY: 0 };
+      if (idx === 0)
+        return { z: -150, scale: 0.85, opacity: 0.5, rotateY: 15, x: -20 };
+      if (idx === 2)
+        return { z: -150, scale: 0.85, opacity: 0.5, rotateY: -15, x: 20 };
+    } else if (isMd) {
+      // MD: Left (idx 0) is Front, Right is Back
+      if (idx === 0) return { z: 60, scale: 1.02, opacity: 1, rotateY: 5 };
+      if (idx === 1) return { z: -80, scale: 0.95, opacity: 0.6, rotateY: -5 };
+    }
+    // SM: Flat
+    return { z: 0, scale: 1, opacity: 1, rotateY: 0 };
   };
 
   const getVisibleEvents = () => {
     const visible = [];
-    for (let i = 0; i < eventsData.length; i++) {
+    const count = isLg ? 3 : isMd ? 2 : 1;
+    for (let i = 0; i < count; i++) {
       visible.push(eventsData[(currentIndex + i) % eventsData.length]);
     }
     return visible;
@@ -60,7 +73,6 @@ const UpcomingEvents = () => {
             </span>
           </h2>
 
-          {/* Navigation Buttons */}
           <div className="hidden gap-4 md:flex">
             <button
               onClick={prevSlide}
@@ -78,34 +90,50 @@ const UpcomingEvents = () => {
         </div>
 
         {/* Carousel Container */}
-        <div className="relative h-[480px]">
-          {/* Cards Grid */}
-          <div className="relative w-full h-full overflow-hidden">
-            <AnimatePresence initial={false} custom={direction}>
-              <Motion.div
-                key={currentIndex}
-                custom={direction}
-                variants={variants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  x: { type: "spring", stiffness: 300, damping: 30 },
-                  opacity: { duration: 0.2 },
-                }}
-                className="absolute inset-0 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-              >
-                {visibleEvents.slice(0, 3).map((event, idx) => (
-                  <div
+        <div
+          className="relative h-[480px] w-full"
+          style={{ perspective: "1500px" }}
+        >
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 h-full">
+            <AnimatePresence initial={false} mode="popLayout">
+              {visibleEvents.map((event, idx) => {
+                const styles = getCardStyles(idx);
+                return (
+                  <Motion.div
                     key={event.id}
-                    className={`${idx === 2 ? "hidden lg:block" : ""} ${idx === 1 ? "hidden sm:block" : ""} block w-full`}
+                    layout
+                    initial={{
+                      opacity: 0,
+                      x: direction > 0 ? 100 : -100,
+                      z: -200,
+                    }}
+                    animate={{
+                      opacity: styles.opacity,
+                      x: 0,
+                      z: styles.z,
+                      scale: styles.scale,
+                      rotateY: styles.rotateY,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      x: direction > 0 ? -100 : 100,
+                      z: -200,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 260,
+                      damping: 25,
+                      mass: 1,
+                    }}
+                    className="w-full h-full"
+                    style={{ transformStyle: "preserve-3d" }}
                   >
-                    <Link to={`/events/${event.id}`}>
+                    <Link to={`/events/${event.id}`} className="block h-full">
                       <EventCard event={event} />
                     </Link>
-                  </div>
-                ))}
-              </Motion.div>
+                  </Motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
 
